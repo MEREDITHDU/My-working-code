@@ -1,0 +1,69 @@
+SOB program
+SOB Int1
+SOB Int2 
+SOB Int3
+SOB Int4
+ 
+program: IN 1
+loop: OUT 2
+       SOB loop
+       STP
+       
+Int1: LAD zapAK
+      POB var1
+      OUT 2
+      LAD piecrazy
+      POB licz1
+      ODE one
+      LAD licz1
+      SOZ end
+      POB zapAK
+        RFI
+        
+Int2: LAD zapAK
+      POB var2
+      OUT 2
+      LAD piecrazy
+      POB licz2
+      ODE one
+      LAD licz2
+      SOZ end
+      POB zapAK
+      RFI
+        
+Int3: LAD zapAK
+      POB var3
+      OUT 2
+      LAD piecrazy
+      POB licz3
+      ODE one
+      LAD licz3
+      SOZ end
+        POB zapAK
+        RFI
+        
+        
+ Int4: LAD zapAK
+        POB var4
+        OUT 2
+        LAD piecrazy
+        POB licz4
+        ODE one
+        LAD licz4
+        SOZ end
+        POB zapAK
+        RFI
+ 
+ end: STP    
+        
+zapAK: RPA
+licz1: RST 5
+licz2: RST 5
+licz3: RST 5
+licz4: RST 5
+var1: RST 49
+var2: RST 50
+var3: RST 51
+var4: RST 52
+one: RST 1
+RST:RPA
