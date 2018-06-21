@@ -21,13 +21,11 @@ public class FloydWarshall {
 		for (int k = 0; k < N; k++) {
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < N; j++) {
-					// to keep track.;
 					if (M[i][k] + M[k][j] < M[i][j]) {
 						M[i][j] = M[i][k] + M[k][j];
 						P[i][j] = k;
 					}
-					// or not to keep track.
-					//M[i][j] = min(M[i][j], M[i][k] + M[k][j]);
+
 				}
 			}
 		}
