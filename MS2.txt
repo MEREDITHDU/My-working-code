@@ -1,0 +1,63 @@
+;----------------------------------------------------------
+; Pierwszy program
+; Przyciski P1
+; Wskazniki LED P3
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+; CSEG -> Segment programu absolutny
+; AT <addr> -> Ulokowany poczawszy od adresu 0
+;----------------------------------------------------------
+CSEG	AT 0
+SYS_INIT:
+	; Inicjalizacja stosu - nie korzystamy ze stosu
+	; Nalezy bezwglednie pamietac gdy uzywamy 
+	; pary CALL - RET 
+	; lub przerwan  niejawny -> CALL
+    P1DIR EQU 96H
+	
+	MOV   	P1DIR,#0FFH
+	MOV		SP,#7FH
+	MOV		P3,#0FEh
+	MOV 	DPTR,#TO_7SEG	
+	MOV		R2,#0
+	
+MAIN:	
+	;INC P1
+	MOV		A,R2
+	INC		A
+	CJNE	A,#10,VAL_OK
+	CLR		A
+VAL_OK:
+	MOV		R2,A
+	MOVC 	A,@A+DPTR
+	MOV		P1,A		
+	ACALL	DELAY	
+	SJMP	MAIN
+	
+	SJMP	$
+		
+DELAY:		
+	MOV		R6,#120
+	MOV		R7,#0
+DY_LP:
+	DJNZ	R7,DY_LP
+	DJNZ	R6,DY_LP
+	RET
+	
+TO_7SEG:
+	DB 01111011B;0
+	DB 01000001B;1
+	DB 00110111B;2
+	DB 01100111B;3
+	DB 01001101B;4
+	DB 01101110B;5
+	DB 01111110B;6
+	DB 01000011B;7
+    DB 01111111B;8
+	DB 01101111B;9
+	
+	
+	
+	
+	END
