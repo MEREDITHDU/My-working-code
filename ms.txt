@@ -1,0 +1,40 @@
+;----------------------------------------------------------
+; Pierwszy program
+; Przyciski P1
+; Wskazniki LED P3
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+; CSEG -> Segment programu absolutny
+; AT <addr> -> Ulokowany poczawszy od adresu 0
+;----------------------------------------------------------
+CSEG	AT 0
+SYS_INIT:
+	; Inicjalizacja stosu - nie korzystamy ze stosu
+	; Nalezy bezwglednie pamietac gdy uzywamy 
+	; pary CALL - RET 
+	; lub przerwan  niejawny -> CALL
+    MOV     SP,#7FH
+	MOV     P1,#55H
+	
+MAIN:
+    ;ACALL DELAY
+	; Porty dostepne sa jako komorki pamieci 
+	; adresowane bezposrednio
+	INC P1
+	
+	;DELAY:
+	MOV R6,#120
+	MOV R7,#0	
+	WAIT:
+	DJNZ R7,WAIT
+	DJNZ R6,WAIT
+	;RET
+	
+	SJMP MAIN
+	
+	STOP:
+	SJMP STOP
+	
+	
+	END
