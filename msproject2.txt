@@ -1,0 +1,152 @@
+#include <ioavr.h>
+#include <inavr.h>
+//f_cpu = 7.3728 MHz 
+//---------------------------------------------------------------------------
+void configure_pins()
+{
+  DDRB |= (1 << PB5); // Wyjscie OC1A  
+}
+//---------------------------------------------------------------------------
+void configure_timers()
+{
+  // Licznik 0 zlicza z czestotliwoscia F_CPU / 1024 = 7200 Hz
+  // Przepelnienie generuje przerwanie
+  // TIMER0_OVF.
+  TCCR0 = 1 | (1 << CS02) | (1 << CS01) | (1 << CS00);
+  TIMSK = 1 << TOIE0;
+  
+  // Licznik jeden sluzy do generowania fali prostokatnej.
+  // Zmiana napiecia na wyprowadzeniu na przeciwne.
+  TCCR1A = 1 << COM1A0; 
+	__enable_interrupt(); 
+}
+//---------------------------------------------------------------------------
+void modulacja(unsigned int dt)
+{
+  if ( dt == 0 )
+  {
+    TCCR1B = 0; // Wylaczam licznik.    
+  }
+  else
+  {
+    // Zeruje licznik.
+    TCNT1 = 0;
+    // Ustawiam zakres licznika aby odpowiadal biezacej nucie.
+    OCR1A = dt;
+    // Wlaczam licznik 1.
+    // Licznik zlicza z czestotliwoscia F_CPU / 8 =  921600 Hz.
+    TCCR1B = 1 << WGM12 | 1 << CS11;
+  }
+}
+//---------------------------------------------------------------------------
+#define PAUZA 0xff
+
+//"Dla Elizy" 
+// ( wysokosc dzwieku, dlugosc dzwieku ).
+//
+// Wysokosc dzwieku % 12 jest indeksem tablicy nuty.
+//
+// Dlugosci dzwiekow: 32 - cala nuta, 16 - polnuta, 8 - cwiercnuta,
+// 4 - osemka.
+
+unsigned int melodia[] =
+{
+                                          12+ 4, 4, 12+ 3, 4, 
+  12+ 4, 4, 12+ 3, 4, 12+ 4, 4,    11, 4, 12+ 2, 4, 12+ 0, 4, 
+      9, 8,           PAUZA, 4,     0, 4,     4, 4,     9, 4,
+     11, 8,           PAUZA, 4,     4, 4,     8, 4,    11, 4,
+  12+ 0, 8,           PAUZA, 4,     4, 4, 12+ 4, 4, 12+ 3, 4,
+  12+ 4, 4, 12+ 3, 4, 12+ 4, 4,    11, 4, 12+ 2, 4, 12+ 0, 4,
+      9, 8,           PAUZA, 4,     0, 4,     4, 4,     9, 4,
+     11, 8,           PAUZA, 4,     4, 4, 12+ 0, 4,    11, 4,
+      9, 8,           PAUZA, 4,
+  
+     11, 4, 12+ 0, 4, 12+ 2, 4,
+  12+ 4,12,                         7, 4, 12+ 5, 4, 12+ 4, 4,
+  12+ 2,12,                         5, 4, 12+ 4, 4, 12+ 2, 4,
+  12+ 0,12,                         4, 4, 12+ 2, 4, 12+ 0, 4,
+     11, 8,           PAUZA, 4,     4, 4, 12+ 4, 4, PAUZA, 4,
+  PAUZA, 4, 12+ 4, 4, 24+ 4, 4, PAUZA, 8,           12+ 3, 4,
+  12+ 4, 4, PAUZA, 8,           12+ 3, 4, 12+ 4, 4, 12+ 3, 4,
+  12+ 4 ,4, 12+ 3, 4, 12+ 4, 4,    11, 4, 12+ 2, 4, 12+ 0, 4,
+      9, 8,           PAUZA, 4,     0, 4,     4, 4,     9, 4,
+
+     11, 8,           PAUZA, 4,     4, 4,     8, 4,    11, 4,
+  12+ 0, 8,           PAUZA, 4,     4, 4, 12+ 4, 4, 12+ 3, 4,
+  12+ 4, 4, 12+ 3, 4, 12+ 4, 4,    11, 4, 12+ 2, 4, 12+ 0, 4,
+      9, 8,           PAUZA, 4,     0, 4,     4, 4,     9, 4,
+     11, 8,           PAUZA, 4,     4, 4, 12+ 0, 4,    11, 4,
+      9, 8,           PAUZA, 4,
+  
+  PAUZA,64
+};
+
+// Licznik 1 zliczajacy z czestotliwoscia 921600 Hz i zmieniajacy napiecie
+// na wyjsciu mikrokontrolera na przeciwne po zliczeniu podanej liczby
+// impulsow generuje dzwiek o odpowiadajacej wysokosci.
+
+unsigned int nuty[] =
+{
+  14090, // c   0
+  13300, // c#  1
+  12553, // d   2
+  11847, // d#  3
+  11182, // e   4
+  10556, // f   5
+  9963, // f#  6
+  9403, // g   7
+  8876, // g#  8
+  8378, // a   9
+  7908, // a# 10
+  7463  // h  11
+};
+//---------------------------------------------------------------------------
+unsigned volatile int idx = 0;
+unsigned volatile czas = 1;
+
+#pragma vector = TIMER0_OVF_vect
+__interrupt void T0_COMP_ISR()
+{
+  --czas;
+  if ( czas == 1 )
+  {
+    // Wprowadzam krotkie przerwy pomiedzy poszczegolnymi nutami.
+    modulacja( 0 );
+  }
+  if ( czas )
+  {
+    // Jeszcze nie uplynal czas trwania nuty.
+    return;
+  }
+  unsigned int nuta = melodia[ idx++ ];
+  czas = melodia[ idx++ ];
+  czas <<= 1;
+  if ( idx == sizeof( melodia ) )
+  {
+    idx = 0;
+  }
+  if ( nuta == PAUZA )
+  {
+    modulacja( 0 );
+  }
+  else
+  {
+    int oktawa = 2;
+    while ( nuta >= 12 )
+    {
+      nuta -= 12;
+      oktawa++;
+    }
+    modulacja( nuty[ nuta ] >> oktawa );
+  }
+}
+//---------------------------------------------------------------------------
+int main()
+{
+  configure_pins();
+  configure_timers();
+  
+  while (1);
+  return 0;
+}
+//---------------------------------------------------------------------------
