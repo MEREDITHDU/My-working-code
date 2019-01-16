@@ -1,0 +1,4 @@
+﻿  snakeOOP.cpp
+c:\users\黑妹\documents\visual studio 2015\projects\snakeoop\snakeoop\snakeoop.cpp(290): error C2275: 'Food': illegal use of this type as an expression
+c:\users\黑妹\documents\visual studio 2015\projects\snakeoop\snakeoop\snakeoop.cpp(301): error C2275: 'Food': illegal use of this type as an expression
+c:\users\黑妹\documents\visual studio 2015\projects\snakeoop\snakeoop\snakeoop.cpp(326): error C2061: syntax error: identifier 'Food'
