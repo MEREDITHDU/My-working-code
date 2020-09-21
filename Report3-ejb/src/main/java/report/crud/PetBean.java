@@ -26,7 +26,7 @@ import report.Pet;
  * 
  * This Class is the pet bean class which consists of six functions
  * for creating, removing, updating and reading pets
- * @author mehow
+ * @author Qilin
  * @version 2.0
  */
 
