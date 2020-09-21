@@ -29,7 +29,7 @@ import report.crud.PetBean;
  * 
  * This Class is the Test class which has multiple functions
  * to manage the testing
- * @author mehow
+ * @author Qilin
  * @version 3.0
  */
 public class Testing {
