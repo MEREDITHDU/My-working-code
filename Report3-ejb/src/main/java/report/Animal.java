@@ -8,7 +8,7 @@ package report;
 /**
  * 
  * It is an specific object for the pet
- * @author mehow
+ * @author Qilin
  * @version 2.0
  */
 
