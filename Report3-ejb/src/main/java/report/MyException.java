@@ -8,7 +8,7 @@ package report;
 /**
  *This class is custom exception which was created to be 
  * used as exception in the program.
- * @author mehow
+ * @author Qilin
  * @version 2.0
  */
 
