@@ -26,7 +26,7 @@ import javax.persistence.TemporalType;
  * 
  * This Class is the Pet class which has multiple functions
  * to manage the Pet object
- * @author mehow
+ * @author Qilin
  * @version 2.0
  */
 
