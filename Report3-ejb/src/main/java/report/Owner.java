@@ -30,7 +30,7 @@ import javax.persistence.TemporalType;
  * 
  * This Class is the Owner class which has multiple functions
  * to manage the Owner object
- * @author mehow
+ * @author Qilin
  * @version 2.0
  */
 
